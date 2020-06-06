@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace order.api.Domain.Entities
 {
@@ -20,9 +21,9 @@ namespace order.api.Domain.Entities
         public int TableNumber { get; set; }
 
         [Required]
-        public IList<OrderSandwich> Sandwiches { get; set; }
+        public virtual IList<OrderSandwich> Sandwiches { get; set; }
 
-        public IList<OrderPriceRule> Rules { get; set; }
+        public virtual IList<OrderPriceRule> Rules { get; set; }
 
         public OrderStatusEnum Status { get; set; }
     }

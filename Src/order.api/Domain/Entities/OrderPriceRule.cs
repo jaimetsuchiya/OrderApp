@@ -19,5 +19,7 @@ namespace order.api.Domain.Entities
 
         [Required]
         public decimal Value { get; set; }
+
+        public PriceRule PriceRule { get; set; }
     }
 }

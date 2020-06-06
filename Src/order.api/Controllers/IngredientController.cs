@@ -19,6 +19,7 @@ namespace order.api.Controllers
         public IngredientController(IMediator mediator) => _mediator = mediator;
 
         [HttpGet]
+        [Route("List")]
         public async Task<IEnumerable<Ingredient>> ListAsync()
         {
             return await _mediator.Send(new ListIngredientCommand());
@@ -44,7 +45,7 @@ namespace order.api.Controllers
             return ProduceResponse(response);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut]
         [ProducesResponseType(typeof(Ingredient), 200)]
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> UpdateAsync([FromBody] DTOs.UpdateIngredient dto)

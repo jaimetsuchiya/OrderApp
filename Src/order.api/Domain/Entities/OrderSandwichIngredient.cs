@@ -21,6 +21,6 @@ namespace order.api.Domain.Entities
         [Required]
         public int Quantity { get; set; }
 
-        public Ingredient Ingredient { get; set; }
+        public virtual Ingredient Ingredient { get; set; }
     }
 }

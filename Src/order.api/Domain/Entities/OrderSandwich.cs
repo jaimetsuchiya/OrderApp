@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace order.api.Domain.Entities
 {
@@ -23,10 +24,11 @@ namespace order.api.Domain.Entities
         [Required]
         public int Quantity { get; set; }
 
+        [ForeignKey("OrderSandwichId")]
         [Required]
-        public IList<OrderSandwichIngredient> AdditionalIngredients { get; set; }
+        public virtual IList<OrderSandwichIngredient> AdditionalIngredients { get; set; }
 
-        public Sandwich Sandwich { get; set; }
-
+        [ForeignKey("SandwichId")]
+        public virtual Sandwich Sandwich { get; set; }
     }
 }

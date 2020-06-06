@@ -46,10 +46,8 @@ namespace order.api
                 });
             });
 
-            services.AddDbContext<AppDbContext>(options =>
-            {
-                options.UseInMemoryDatabase("CQRS_SAMPLE");
-            });
+            services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("SWBRASIL"));
+
             services.AddHttpContextAccessor();
             services.AddSingleton<IConfiguration>(this.Configuration);
             var audiences = this.Configuration.GetSection("Authentication:Audiences").Get<string[]>();
@@ -78,6 +76,7 @@ namespace order.api
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IIngredientRepository, IngredientRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
+            services.AddScoped<IOrderSandwichRepository, OrderSandwichRepository>();
             services.AddScoped<IPriceRuleRepository, PriceRuleRepository>();
             services.AddScoped<ISandwichRepository, SandwichRepository>();
             services.AddMediatR(this.GetType().Assembly);

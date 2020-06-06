@@ -28,7 +28,9 @@ namespace order.api.Domain.Commands
 
         public async Task<IEnumerable<Sandwich>> Handle(ListSandwichCommand request, CancellationToken cancellationToken)
         {
-            return await _repository.ListAsync();
+            var list = await _repository.ListAsync();
+            var ingredients = list.First().Ingredients;
+            return list;
         }
     }
 }

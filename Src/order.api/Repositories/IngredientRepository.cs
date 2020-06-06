@@ -16,5 +16,6 @@ namespace order.api.Repositories
         public IngredientRepository(AppDbContext context) : base(context)
         {
         }
+
     }
 }
