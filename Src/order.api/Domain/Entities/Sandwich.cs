@@ -22,7 +22,7 @@ namespace order.api.Domain.Entities
         [Required]
         public decimal Price 
         { 
-            get { return this.Ingredients == null ? 0M : Ingredients.Where(i=>!i.Deleted.HasValue || !i.Deleted.Value).Select(i => i.Ingredient.Price * i.Quantity).Sum(); } 
+            get { return this.Ingredients == null ? 0M : Ingredients.Where(i=> i.Ingredient != null && !i.Deleted.HasValue || !i.Deleted.Value).Select(i => i.Ingredient.Price * i.Quantity).Sum(); } 
         }
 
     }

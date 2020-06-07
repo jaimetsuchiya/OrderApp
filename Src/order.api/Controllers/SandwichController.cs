@@ -10,7 +10,6 @@ using order.api.Domain.Entities;
 
 namespace order.api.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     public class SandwichController : BaseController<Sandwich>
     {
@@ -37,6 +36,7 @@ namespace order.api.Controllers
 
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(Sandwich), 201)]
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> PostAsync([FromBody] DTOs.CreateSandwich dto)
@@ -50,6 +50,7 @@ namespace order.api.Controllers
 
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(Sandwich), 200)]
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> UpdateAsync([FromBody] DTOs.UpdateSandwich dto)

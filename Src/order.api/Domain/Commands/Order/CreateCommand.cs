@@ -67,10 +67,10 @@ namespace order.api.Domain.Commands
 
                 //Adiciona as regras para calculo do valor final
                 var allRules = (await _priceRuleRepository.ListAsync()).Where(pr => !pr.Deleted.HasValue || !pr.Deleted.Value).ToList();
-                decreaseValue = ApplyDecreasePriceRule(orderEntity, sandwiches, decreaseValue, allRules);
+                decreaseValue = ApplyDecreasePriceRule(orderEntity, sandwiches, allRules);
                 orderEntity.Total -= decreaseValue;
 
-                increaseValue = ApplyIncreasePriceRule(orderEntity, increaseValue, allRules);
+                increaseValue = ApplyIncreasePriceRule(orderEntity, allRules);
                 orderEntity.Total += increaseValue;
 
                 await _orderRepository.AddAsync(orderEntity);
@@ -82,8 +82,9 @@ namespace order.api.Domain.Commands
             return response;
         }
 
-        private static decimal ApplyDecreasePriceRule(Order orderEntity, List<OrderSandwich> sandwiches, decimal decreaseValue, List<PriceRule> allRules)
+        private static decimal ApplyDecreasePriceRule(Order orderEntity, List<OrderSandwich> sandwiches, List<PriceRule> allRules)
         {
+            var result = 0M;
             var decreaseRules = allRules.Where(r => r.PriceRuleType == Common.PriceRuleTypeEnum.Discount).OrderByDescending(r => r.RuleValue).ToList();
             for (var i = 0; i < decreaseRules.Count; i++)
             {
@@ -94,7 +95,7 @@ namespace order.api.Domain.Commands
                         if (!orderEntity.Rules.Any(r => r.PriceRuleId == decreaseRules[i].Id)
                             && decreaseRules[i].RuleValue.HasValue)
                         {
-                            if (decreaseRules[i].RuleValue.Value >= sandwiches.Count)
+                            if (sandwiches.Count  >= decreaseRules[i].RuleValue.Value )
                             {
                                 ruleValue = ApplyValueRule(orderEntity.Total, decreaseRules, i);
                             }
@@ -108,7 +109,7 @@ namespace order.api.Domain.Commands
 
                 if (ruleValue > 0M)
                 {
-                    decreaseValue += ruleValue;
+                    result += ruleValue;
                     orderEntity.Rules.Add(new OrderPriceRule()
                     {
                         Id = Guid.NewGuid(),
@@ -117,14 +118,14 @@ namespace order.api.Domain.Commands
                         Value = ruleValue
                     });
                 }
-
             }
 
-            return decreaseValue;
+            return result;
         }
 
-        private static decimal ApplyIncreasePriceRule(Order orderEntity, decimal increaseValue, List<PriceRule> allRules)
+        private static decimal ApplyIncreasePriceRule(Order orderEntity, List<PriceRule> allRules)
         {
+            var result = 0M;
             var increaseRules = allRules.Where(r => r.PriceRuleType == Common.PriceRuleTypeEnum.AdditionalCharge).ToList();
             for (var i = 0; i < increaseRules.Count; i++)
             {
@@ -138,7 +139,7 @@ namespace order.api.Domain.Commands
 
                 if (ruleValue > 0M)
                 {
-                    increaseValue += ruleValue;
+                    result += ruleValue;
                     orderEntity.Rules.Add(new OrderPriceRule()
                     {
                         Id = Guid.NewGuid(),
@@ -150,7 +151,7 @@ namespace order.api.Domain.Commands
 
             }
 
-            return increaseValue;
+            return result;
         }
 
         private static List<OrderSandwich> OrderSandwichs(CreateOrderCommand request)
@@ -160,18 +161,19 @@ namespace order.api.Domain.Commands
 
         private static decimal ApplyValueRule(decimal decreaseValue, List<PriceRule> decreaseRules, int i)
         {
+            var result = 0M;
             switch (decreaseRules[i].PriceRuleValueType)
             {
                 case Common.PriceRuleValueTypeEnum.Full:
-                    decreaseValue += decreaseRules[i].Value;
+                    result = decreaseRules[i].Value;
                     break;
 
                 case Common.PriceRuleValueTypeEnum.Percentage:
-                    decreaseValue += ((decreaseValue * decreaseRules[i].Value) / 100);
+                    result = ((decreaseValue /100 ) * decreaseRules[i].Value);
                     break;
             }
 
-            return decreaseValue;
+            return result;
         }
 
         private async Task<Response<Order>> OrderIsValid(CreateOrderCommand request)
@@ -194,13 +196,13 @@ namespace order.api.Domain.Commands
                     sandwiches[i].AdditionalIngredients[x].Ingredient = await _ingredientRepository.FindByIdAsync(sandwiches[i].AdditionalIngredients[x].IngredientId);
             }
 
-            if (sandwiches.Any(x => x.Sandwich.Deleted.HasValue && x.Sandwich.Deleted.Value))
-                return new Response<Order>($"Lanche {sandwiches.First(x => x.Sandwich.Deleted.HasValue && x.Sandwich.Deleted.Value).Sandwich.Name} indisponível!");
+            if (sandwiches.Any(x => (x.Sandwich.Deleted.HasValue && x.Sandwich.Deleted.Value) || x.Sandwich.Ingredients.Any(i => i.Deleted.HasValue && i.Deleted.Value)))
+                return new Response<Order>($"Lanche {sandwiches.First(x => (x.Sandwich.Deleted.HasValue && x.Sandwich.Deleted.Value) || x.Sandwich.Ingredients.Any(i => i.Deleted.HasValue && i.Deleted.Value)).Sandwich.Name} indisponível!");
 
-            if (sandwiches.Any(x => x.AdditionalIngredients.Any(ai => !ai.Deleted.HasValue || !ai.Deleted.Value && ai.Ingredient == null || (ai.Ingredient.Deleted.HasValue && ai.Ingredient.Deleted.Value))))
+            if (sandwiches.Any(x => x.AdditionalIngredients.Any(ai => (!ai.Deleted.HasValue || !ai.Deleted.Value) && (ai.Ingredient == null || (ai.Ingredient.Deleted.HasValue && ai.Ingredient.Deleted.Value)))))
             {
-                var sandwich = sandwiches.First(x => x.AdditionalIngredients.Any(ai => !ai.Deleted.HasValue || !ai.Deleted.Value && ai.Ingredient == null || (ai.Ingredient.Deleted.HasValue && ai.Ingredient.Deleted.Value)));
-                var ingredient = sandwich.AdditionalIngredients.First(ai => !ai.Deleted.HasValue || !ai.Deleted.Value && ai.Ingredient == null || (ai.Ingredient.Deleted.HasValue && ai.Ingredient.Deleted.Value));
+                var sandwich = sandwiches.First(x => x.AdditionalIngredients.Any(ai => (!ai.Deleted.HasValue || !ai.Deleted.Value) && (ai.Ingredient == null || (ai.Ingredient.Deleted.HasValue && ai.Ingredient.Deleted.Value))));
+                var ingredient = sandwich.AdditionalIngredients.First(ai => (!ai.Deleted.HasValue || !ai.Deleted.Value) && (ai.Ingredient == null || (ai.Ingredient.Deleted.HasValue && ai.Ingredient.Deleted.Value)));
 
                 return new Response<Order>($"O ingrediente adicional {ingredient.Ingredient.Name} do Lanche {request.Sandwiches.First(x => x.Sandwich.Deleted.HasValue && x.Sandwich.Deleted.Value).Sandwich.Name}, está indisponível!");
             }

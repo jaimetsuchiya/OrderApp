@@ -23,6 +23,8 @@ namespace order.api.DTOs
             [Required]
             public int Quantity { get; set; }
 
+            public int Position { get; set;
+            }
             public List<CreateOrderSandwichAdditionalIngredient> AdditionalIngredients { get; set; }
         }
 

@@ -29,12 +29,7 @@ namespace order.api.Repositories
 
         public override async Task<Order> FindByIdAsync(Guid id)
         {
-            return await _context.Orders
-                                    .Include(o => o.Rules).ThenInclude(r => r.PriceRule)
-                                    .Include(o => o.Sandwiches).ThenInclude(s => s.Sandwich).ThenInclude(o => o.Ingredients)
-                                    .Include(o => o.Sandwiches).ThenInclude(s => s.AdditionalIngredients).ThenInclude(i => i.Ingredient)
-                                    .FirstOrDefaultAsync(x => x.Id == id);
-                                            
+            return await _context.Orders.FindAsync(id);
         }
     }
 }

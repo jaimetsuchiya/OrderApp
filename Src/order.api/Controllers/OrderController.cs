@@ -11,7 +11,6 @@ using order.api.Infrastructure;
 
 namespace order.api.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     public class OrderController : BaseController<Order>
     {
@@ -44,6 +43,7 @@ namespace order.api.Controllers
             var response = await _mediator.Send(new CreateOrderCommand(dto.TableNumber, dto.Sandwiches.Select( s => new OrderSandwich() { 
                 SandwichId = s.SandwichId,
                 Quantity = s.Quantity,
+                Position = s.Position,
                 AdditionalIngredients = s.AdditionalIngredients.Select( ai => new OrderSandwichIngredient() {
                     IngredientId = ai.IngredientId,
                     Quantity = ai.Quantity
@@ -53,9 +53,10 @@ namespace order.api.Controllers
             return ProduceResponse(response);
         }
 
-        [HttpPut("{id}")]
+        [HttpPut()]
         [ProducesResponseType(typeof(Order), 200)]
         [ProducesResponseType(typeof(string), 400)]
+        [Authorize(Roles = "Admin")]
         public async Task<IActionResult> UpdateAsync([FromBody] DTOs.UpdateOrder dto)
         {
             var response = await _mediator.Send(new UpdateOrderCommand(dto.OrderId, dto.Status));

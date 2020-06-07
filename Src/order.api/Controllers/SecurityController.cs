@@ -25,7 +25,7 @@ namespace order.api.Controllers
         [ProducesResponseType(typeof(string), 200)]
         public IActionResult GuestToken()
         {
-            return Ok(CreateToken("Guest"));
+            return Ok(CreateToken("Guest", ""));
         }
 
         [HttpGet]
@@ -33,10 +33,10 @@ namespace order.api.Controllers
         [ProducesResponseType(typeof(string), 200)]
         public IActionResult AdminToken()
         {
-            return Ok( CreateToken("Admin") );
+            return Ok( CreateToken("Admin", "Admin") );
         }
 
-        private string CreateToken(string userName)
+        private string CreateToken(string userName, string role)
         {
             //Gera o token JWT
             var audience = "b5efeeaf2d46854a78cbe4a3ca50ad6b";
@@ -49,9 +49,10 @@ namespace order.api.Controllers
                 NotBefore = DateTime.UtcNow,
                 Subject = new ClaimsIdentity(new Claim[]
                 {
-                    new Claim(ClaimTypes.Name, userName)
+                    new Claim(ClaimTypes.Name, userName),
+                    new Claim(ClaimTypes.Role, role)
                 }),
-                Expires = DateTime.UtcNow.AddHours(8),
+                Expires = DateTime.UtcNow.AddMonths(6),
                 Audience = audience,
                 SigningCredentials = new SigningCredentials(new SymmetricSecurityKey(key), SecurityAlgorithms.HmacSha256Signature)
             };

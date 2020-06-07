@@ -11,7 +11,6 @@ using order.api.Infrastructure;
 
 namespace order.api.Controllers
 {
-    [Authorize]
     [Route("api/[controller]")]
     public class IngredientController : BaseController<Ingredient>
     {
@@ -19,7 +18,6 @@ namespace order.api.Controllers
         public IngredientController(IMediator mediator) => _mediator = mediator;
 
         [HttpGet]
-        [Route("List")]
         public async Task<IEnumerable<Ingredient>> ListAsync()
         {
             return await _mediator.Send(new ListIngredientCommand());
@@ -35,8 +33,9 @@ namespace order.api.Controllers
 
             return Ok(order);
         }
-
+        
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(Ingredient), 201)]
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> PostAsync([FromBody] DTOs.CreateIngredient dto)
@@ -46,6 +45,7 @@ namespace order.api.Controllers
         }
 
         [HttpPut]
+        [Authorize(Roles = "Admin")]
         [ProducesResponseType(typeof(Ingredient), 200)]
         [ProducesResponseType(typeof(string), 400)]
         public async Task<IActionResult> UpdateAsync([FromBody] DTOs.UpdateIngredient dto)

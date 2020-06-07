@@ -33,6 +33,7 @@ namespace order.api
 
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddControllers();
             services.AddCors(options =>
             {
                 options.AddPolicy(MyAllowSpecificOrigins,
@@ -41,8 +42,7 @@ namespace order.api
                     builder
                      .AllowAnyHeader()
                      .AllowAnyMethod()
-                     .WithOrigins(this.Configuration.GetSection("Authentication:Origins").Get<string[]>())
-                     .SetIsOriginAllowedToAllowWildcardSubdomains();
+                     .AllowAnyOrigin();
                 });
             });
 
@@ -83,7 +83,6 @@ namespace order.api
             services.AddScoped<IAppUIContext>(provider =>
                             new AppUIContext(provider.GetService<IHttpContextAccessor>()                            )
                         ); 
-            services.AddControllers();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -102,8 +101,7 @@ namespace order.api
             {
                 builder.AllowAnyHeader()
                        .AllowAnyMethod()
-                       .WithOrigins(this.Configuration.GetSection("Authentication:Origins").Get<string[]>())
-                       .SetIsOriginAllowedToAllowWildcardSubdomains();
+                       .AllowAnyOrigin();
             });
             app.UseAuthentication();
             app.UseAuthorization();
