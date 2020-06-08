@@ -4,6 +4,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { Routes, RouterModule } from '@angular/router';
+import { CommonModule } from "@angular/common";
 
 import { AppComponent } from './app.component';
 import { AdminAreaComponent } from './admin-area/admin-area.component';
@@ -17,6 +18,7 @@ import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
 import { MenuComponent } from './menu/menu.component';
 import { HttpClientModule } from '@angular/common/http';
+import { StorageServiceModule } from 'ngx-webstorage-service';
 
 const routes: Routes = [
   { path: 'guest', component: GuestAreaComponent },
@@ -34,9 +36,12 @@ const routes: Routes = [
     IngredientFormComponent,
     OrderFormComponent,
     ShoppingCartComponent,
-    MenuComponent
+    MenuComponent,
+    GuestAreaComponent,
+    AdminAreaComponent
   ],
   imports: [
+    CommonModule,
     MatToolbarModule,
     HttpClientModule,
     MatMenuModule,
@@ -44,6 +49,7 @@ const routes: Routes = [
     BrowserModule,
     RouterModule.forRoot(routes,  { enableTracing: false }),
     BrowserAnimationsModule,
+    StorageServiceModule
   ],
   providers: [],
   bootstrap: [

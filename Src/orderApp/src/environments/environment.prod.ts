@@ -1,3 +1,7 @@
 export const environment = {
-  production: true
+  production: true,
+  serviceURL : 'http://localhost:44336/api/',
+  guestToken : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6Ikd1ZXN0Iiwicm9sZSI6IiIsIm5iZiI6MTU5MTQ3OTM2NywiZXhwIjoxNjA3MjkwNTY3LCJpYXQiOjE1OTE0NzkzNjcsImlzcyI6IlNXQnJhc2lsIiwiYXVkIjoiYjVlZmVlYWYyZDQ2ODU0YTc4Y2JlNGEzY2E1MGFkNmIifQ.VlkKp4WyRuWxs8tyg9vgX2mulF4D2KtAG6OJxrtXKMw',
+  adminToken : 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1bmlxdWVfbmFtZSI6IkFkbWluIiwicm9sZSI6IkFkbWluIiwibmJmIjoxNTkxNDc5MzkyLCJleHAiOjE2MDcyOTA1OTIsImlhdCI6MTU5MTQ3OTM5MiwiaXNzIjoiU1dCcmFzaWwiLCJhdWQiOiJiNWVmZWVhZjJkNDY4NTRhNzhjYmU0YTNjYTUwYWQ2YiJ9.Iz4fiJJqm_9cullV5AFiNm841Pvib1WHirj919oeTS4'
+
 };

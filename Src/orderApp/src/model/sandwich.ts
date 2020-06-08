@@ -1,6 +1,6 @@
 export class Sandwich {
-    Id: string;
-    Name: string;
-    Ingredients: [];
-    Price: number;
+    id: string;
+    name: string;
+    ingredients: [];
+    price: number;
   }

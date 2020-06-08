@@ -18,6 +18,7 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using System.Text;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 
 namespace order.api
 {
@@ -33,17 +34,14 @@ namespace order.api
 
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddControllers();
+            var corsBuilder = new CorsPolicyBuilder();
+            corsBuilder.AllowAnyHeader();
+            corsBuilder.AllowAnyMethod();
+            corsBuilder.AllowAnyOrigin(); // For anyone access.
+
             services.AddCors(options =>
             {
-                options.AddPolicy(MyAllowSpecificOrigins,
-                builder =>
-                {
-                    builder
-                     .AllowAnyHeader()
-                     .AllowAnyMethod()
-                     .AllowAnyOrigin();
-                });
+                options.AddPolicy(MyAllowSpecificOrigins, corsBuilder.Build() );
             });
 
             services.AddDbContext<AppDbContext>(options => options.UseInMemoryDatabase("SWBRASIL"));
@@ -72,7 +70,6 @@ namespace order.api
                 };
             });
             services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
-
             services.AddScoped<IUnitOfWork, UnitOfWork>();
             services.AddScoped<IIngredientRepository, IngredientRepository>();
             services.AddScoped<IOrderRepository, OrderRepository>();
@@ -83,6 +80,8 @@ namespace order.api
             services.AddScoped<IAppUIContext>(provider =>
                             new AppUIContext(provider.GetService<IHttpContextAccessor>()                            )
                         ); 
+            services.AddControllers();
+
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -94,22 +93,68 @@ namespace order.api
             }
 
             app.UseHttpsRedirection();
+            app.UseOptions();
 
             app.UseRouting();
+            //app.UseCors(builder => builder.AllowAnyOrigin()
+            //        .AllowAnyHeader()
+            //        .AllowAnyMethod().Build()
+            //);
 
-            app.UseCors(builder =>
-            {
-                builder.AllowAnyHeader()
-                       .AllowAnyMethod()
-                       .AllowAnyOrigin();
-            });
+            app.UseCors(MyAllowSpecificOrigins);
+            //app.UseCors(builder =>
+            //{
+            //    builder.AllowAnyHeader()
+            //           .AllowAnyMethod()
+            //           .SetIsOriginAllowedToAllowWildcardSubdomains()
+            //           .AllowAnyOrigin();
+            //});
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseEndpoints(endpoints =>
             {
-                endpoints.MapControllers().RequireCors("CorsPolicy");
+                endpoints.MapControllers();
             });
+        }
+    }
+
+
+    public class OptionsMiddleware
+    {
+        private readonly RequestDelegate _next;
+
+        public OptionsMiddleware(RequestDelegate next)
+        {
+            _next = next;
+        }
+
+        public Task Invoke(HttpContext context)
+        {
+            return BeginInvoke(context);
+        }
+
+        private Task BeginInvoke(HttpContext context)
+        {
+            if (context.Request.Method == "OPTIONS")
+            {
+                context.Response.Headers.Add("Access-Control-Allow-Origin", new[] { (string)context.Request.Headers["Origin"] });
+                context.Response.Headers.Add("Access-Control-Allow-Headers", new[] { "Origin, X-Requested-With, Content-Type, Accept" });
+                context.Response.Headers.Add("Access-Control-Allow-Methods", new[] { "GET, POST, PUT, DELETE, OPTIONS" });
+                context.Response.Headers.Add("Access-Control-Allow-Credentials", new[] { "true" });
+                context.Response.StatusCode = 200;
+                return context.Response.WriteAsync("OK");
+            }
+
+            return _next.Invoke(context);
+        }
+    }
+
+    public static class OptionsMiddlewareExtensions
+    {
+        public static IApplicationBuilder UseOptions(this IApplicationBuilder builder)
+        {
+            return builder.UseMiddleware<OptionsMiddleware>();
         }
     }
 }

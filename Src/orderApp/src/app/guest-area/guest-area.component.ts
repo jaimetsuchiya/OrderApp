@@ -1,35 +1,36 @@
-import { Component, OnInit  } from '@angular/core';
+import { Component, OnInit, ChangeDetectionStrategy    } from '@angular/core';
 import { GuestServiceService } from '../guest-service.service';
-import {  takeUntil } from 'rxjs/operators';
-import { Subject } from 'rxjs';
+import { takeUntil } from 'rxjs/operators';
+import { Subject, Observable } from 'rxjs';
 import { Sandwich}  from '../../model/sandwich';
-import {Observable} from 'rxjs';    
 
 
 @Component({
   selector: 'app-guest-area',
   templateUrl: './guest-area.component.html',
-  styleUrls: ['./guest-area.component.css']
+  styleUrls: ['./guest-area.component.css'],
+  changeDetection: ChangeDetectionStrategy.Default
 })
 
-export class GuestAreaComponent {
+export class GuestAreaComponent implements OnInit  {
 
-  constructor(public dataService: GuestServiceService) { 
-    this.onAsync();
-    this.onSubscribe();
-  }
-  
-  public response:Observable<Sandwich[]>;
-  public sandwiches:Sandwich[];
+    constructor(public dataService: GuestServiceService) { 
+    }
 
-  onSubscribe()
-  {
-    this.dataService.listSandwiches().subscribe(result=>{
-      this.sandwiches=result;
-    })
-  }
-  onAsync()
-  {
-   this.response= this.dataService.listSandwiches();
-  }
+    sandwiches: Sandwich[];
+
+    ngOnInit() {
+      this.dataService.listSandwiches().subscribe((result) => {
+        this.sandwiches = result as Sandwich[];
+        console.log('listSandwiches', this.sandwiches);
+      },
+      (error) => {
+        console.error(error);
+      });
+    };
+
+    placeOrder(sandwich: Sandwich) {
+
+    };
+
 }
