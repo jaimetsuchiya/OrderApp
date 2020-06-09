@@ -111,7 +111,7 @@
           }
         },
         "styles": [
-          "styles/bootstrap-3.3.7-dist/css/bootstrap.min.css",
+          "node_modules/bootstrap/dist/css/bootstrap.min.css",
           "styles.scss"
         ],
         "e2e": {

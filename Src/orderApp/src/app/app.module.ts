@@ -19,10 +19,13 @@ import { ShoppingCartComponent } from './shopping-cart/shopping-cart.component';
 import { MenuComponent } from './menu/menu.component';
 import { HttpClientModule } from '@angular/common/http';
 import { StorageServiceModule } from 'ngx-webstorage-service';
+import { AppBootstrapModule } from './app-bootstrap.module';
+import { LocalStorageService } from './local-storage-service.service'
 
 const routes: Routes = [
-  { path: 'guest', component: GuestAreaComponent },
+  { path: 'menu', component: GuestAreaComponent },
   { path: 'admin', component: AdminAreaComponent },
+  { path: 'order/:id', component: OrderFormComponent },
   { path: 'shopping-cart', component: ShoppingCartComponent },
 ];
 
@@ -41,6 +44,7 @@ const routes: Routes = [
     AdminAreaComponent
   ],
   imports: [
+    AppBootstrapModule,
     CommonModule,
     MatToolbarModule,
     HttpClientModule,
@@ -51,7 +55,7 @@ const routes: Routes = [
     BrowserAnimationsModule,
     StorageServiceModule
   ],
-  providers: [],
+  providers: [LocalStorageService],
   bootstrap: [
     AppComponent
   ]

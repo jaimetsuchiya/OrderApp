@@ -1,8 +1,8 @@
 import { Component, OnInit, ChangeDetectionStrategy    } from '@angular/core';
 import { GuestServiceService } from '../guest-service.service';
-import { takeUntil } from 'rxjs/operators';
-import { Subject, Observable } from 'rxjs';
 import { Sandwich}  from '../../model/sandwich';
+import { Router } from '@angular/router';
+import { LocalStorageService } from '../local-storage-service.service'
 
 
 @Component({
@@ -14,7 +14,7 @@ import { Sandwich}  from '../../model/sandwich';
 
 export class GuestAreaComponent implements OnInit  {
 
-    constructor(public dataService: GuestServiceService) { 
+    constructor(public dataService: GuestServiceService, public localService: LocalStorageService, private router: Router ) { 
     }
 
     sandwiches: Sandwich[];
@@ -30,6 +30,9 @@ export class GuestAreaComponent implements OnInit  {
     };
 
     placeOrder(sandwich: Sandwich) {
+
+      this.localService.storeSandwich(sandwich);
+      this.router.navigateByUrl(`/order/${sandwich.id}`);
 
     };
 

@@ -3,7 +3,8 @@ import { HttpClient, HttpErrorResponse, HttpHeaders } from '@angular/common/http
 import { environment } from '../environments/environment';
 import { retry, catchError, tap } from 'rxjs/operators';
 import { throwError } from 'rxjs';
-import { Sandwich} from '../model/sandwich'
+import { Sandwich } from '../model/sandwich'
+import { Ingredient } from '../model/ingredient'
 import {Observable} from 'rxjs';    
 import { Order } from 'src/model/order';
 
@@ -33,11 +34,25 @@ export class GuestServiceService {
     return headers;
   }
   
+  public listIngredients():Observable<Ingredient[]> {
+    let headers = this.createHeaders();
+    let url = this.serviceURL('ingredient');
+
+    return this.httpClient.get<Ingredient[]>(url, {headers});
+  };
+
   public listSandwiches():Observable<Sandwich[]> {
     let headers = this.createHeaders();
     let url = this.serviceURL('sandwich');
 
     return this.httpClient.get<Sandwich[]>(url, {headers});
+  };
+
+  public getSandwiches(id: string):Observable<Sandwich> {
+    let headers = this.createHeaders();
+    let url = this.serviceURL('sandwich') + '/' + id;
+    console.log('url', url);
+    return this.httpClient.get<Sandwich>(url, {headers});
   };
 
   public placeOrder(order: Order) {
