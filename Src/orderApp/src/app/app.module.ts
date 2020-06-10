@@ -5,6 +5,8 @@ import { MatMenuModule } from '@angular/material/menu';
 import { MatIconModule } from '@angular/material/icon';
 import { Routes, RouterModule } from '@angular/router';
 import { CommonModule } from "@angular/common";
+import { FormsModule, ReactiveFormsModule } from "@angular/forms";
+
 
 import { AppComponent } from './app.component';
 import { AdminAreaComponent } from './admin-area/admin-area.component';
@@ -44,6 +46,7 @@ const routes: Routes = [
     AdminAreaComponent
   ],
   imports: [
+    FormsModule, ReactiveFormsModule,
     AppBootstrapModule,
     CommonModule,
     MatToolbarModule,

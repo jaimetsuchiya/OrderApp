@@ -1,1 +1,52 @@
-<p>admin-area works!</p>
+<div>
+    <div class="row">
+        <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Ingredientes</h5>
+                    <div class="card-text">
+                        <div class="table-responsive">
+                            <table class="table">
+                                <tr>
+                                    <th><br/></th>
+                                    <th>Nome</th>
+                                    <th>Custo</th>
+                                    <th>Preço</th>
+                                </tr>
+                                <tr *ngFor="let ingredient of ingredients" >
+                                    <td></td>
+                                    <td>{{ingredient.name}}</td>
+                                    <td class="text-right">{{ingredient.cost  | number: '1.2-2'}}</td>
+                                    <td class="text-right">{{ingredient.price  | number: '1.2-2'}}</td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
+                    <a href="#" class="btn btn-primary">Novo Ingrediente</a>
+                </div>
+            </div>
+        </div>
+            <div class="col-xs-12 col-sm-6 col-md-6 col-lg-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Lanches</h5>
+                    <div class="card-text">
+                        <table class="table table-striped" > 
+                            <tr>
+                                <th><br/></th>
+                                <th>Nome</th>
+                                <th>Preço</th>
+                            </tr>
+                            <tr *ngFor="let sandwich of sandwiches" >
+                                <td></td>
+                                <td>{{sandwich.name}}</td>
+                                <td class="text-right">{{sandwich.price  | number: '1.2-2'}}</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <a href="#" class="btn btn-primary">Novo Lanche</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

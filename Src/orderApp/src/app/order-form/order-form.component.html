@@ -1,65 +1,84 @@
 <div>
     <h2>Pedido</h2>
-    <div class="row">
-        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
-            <h2>{{order?.sandwich?.sandwich?.name}}</h2>
-            <p class="ingredients">
-                <span *ngFor="let sandwichIngredient of order?.sandwich?.sandwich?.ingredients; first as isFirst">
-                    <span *ngIf="!isFirst">,</span>
-                    {{sandwichIngredient?.ingredient.name}}
-                </span>
-            </p>
-        </div>
-        <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
-            <form>
+    <div *ngIf="message != ''" class="pt-5">
+        <div class="alert" role="alert"  [ngClass]="{'alert-danger': (messageType == 'danger'), 'alert-success': (messageType != 'danger')}">
+            {{message}}
+          </div>
+          <br/>
+          <button class="btn btn-primary" (click)="back()"><strong>Voltar</strong></button>
+    </div>
+    <div *ngIf="message == ''">
+        <div class="row pt-5">
+            <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
+                <h2>{{order?.sandwich?.sandwich?.name}}</h2>
+                <p class="ingredients">
+                    <span *ngFor="let sandwichIngredient of order?.sandwich?.sandwich?.ingredients; first as isFirst">
+                        <span *ngIf="!isFirst">,</span>
+                        {{sandwichIngredient?.ingredient.name}}
+                    </span>
+                </p>
+            </div>
+            <div class="col-lg-4 col-md-6 col-sm-12 col-xs-12">
                 <div class="form-row">
                     <div class="col-md-4">
-                        <label for="quantidade">Mesa</label>
-                        <input type="number" class="form-control is-valid" id="mesa" (ngModel)="order?.tableNumber" placeholder="Mesa" min="1" max="99" value="1" />
+                        <label for="mesa">Mesa</label>
+                        <input type="number" class="form-control" id="mesa" [(ngModel)]="order.tableNumber" placeholder="Mesa" min="1" max="99"  (ngModelChange)="recalculate()"  [ngClass]="{'is-invalid': !(order.tableNumber > 0), 'is-valid': (order.tableNumber > 0)}" />
                     </div>
                     <div class="col-md-4">
-                        <label for="quantidade">Posição</label>
-                        <input type="number" class="form-control is-valid" id="posicao" (ngModel)="order?.sandwich?.position" placeholder="Posição" min="1" max="99" value="1" />
+                        <label for="posicao">Posição</label>
+                        <input type="number" class="form-control" id="posicao" [(ngModel)]="order.sandwich.position" placeholder="Posição" min="1" max="99"  (ngModelChange)="recalculate()" [ngClass]="{'is-invalid': !(order.sandwich.position > 0), 'is-valid': (order.sandwich.position > 0)}"  />
                     </div>
                     <div class="col-md-4">
                         <label for="quantidade">Quantidade</label>
-                        <input type="number" class="form-control is-valid" id="quantidade" (ngModel)="order?.sandwich?.quantity" placeholder="Quantidade" min="1" max="99" value="1" />
+                        <input type="number" class="form-control" id="quantidade" [(ngModel)]="order.sandwich.quantity" placeholder="Quantidade" min="1" max="99" value="1" (ngModelChange)="recalculate()" [ngClass]="{'is-invalid': !(order.sandwich.quantity > 0), 'is-valid': (order.sandwich.quantity > 0)}"  />
                     </div>
                 </div>
-                <div class="row"><br/></div>
-               
-            </form>
-        </div>
-    </div>
-    <div class="row" *ngIf="order?.sandwich?.additionalIngredients?.length > 0">
-        <div class="col-lg-12">
-            <div class="row">
-                <div class="col-md-8">
-                    <button data-toggle="collapse" data-target="#ingredientesAdicionaisCollapse"><strong>Ingredientes adicionais</strong></button>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="valorLanche">Vl. Lanche</label>
+                        <input type="text" class="form-control" id="valorLanche" [ngModel]="order.sandwich.sandwich.price | number: '1.2-2'" placeholder="Valor Lanche" disabled="disabled" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="valorAdicional">Vl. Adicional</label>
+                        <input type="text" class="form-control" id="valorAdicional" [ngModel]="order.totalAdditional | number: '1.2-2'" placeholder="Valor Adicional" disabled="disabled" />
+                    </div>
+                    <div class="col-md-4">
+                        <label for="valorAdicional">Total</label>
+                        <input type="text" class="form-control" id="valorAdicional" [ngModel]="order.total | number: '1.2-2'" placeholder="Valor Total" disabled="disabled" />
+                    </div>
                 </div>
             </div>
-            <div class="row collapse pt-5" id="ingredientesAdicionaisCollapse">
-                <div class="col-md-8">
-                    <div class="container" *ngFor="let ingredient of order?.sandwich?.additionalIngredients; first as isFirst"> 
-                        <div class="card">
-                            <div class="card-body">
-                                <div class="row">
-                                    <div class="col-lg-10">{{ingredient?.ingredient.name}}</div>
-                                    <div class="col-lg-2">
-                                        <input type="number" class="form-control is-valid" value="0" (ngModel)="ingredient?.quantity" />
+        </div>
+        <div class="row" *ngIf="order?.sandwich?.additionalIngredients?.length > 0">
+            <div class="col-lg-12">
+                <div class="row">
+                    <div class="col-md-8">
+                        <button data-toggle="collapse" data-target="#ingredientesAdicionaisCollapse"><strong>Ingredientes adicionais</strong></button>
+                    </div>
+                </div>
+                <div class="row collapse pt-5" id="ingredientesAdicionaisCollapse">
+                    <div class="col-md-8">
+                        <div class="container" *ngFor="let ingredient of order.sandwich.additionalIngredients; first as isFirst"> 
+                            <div class="card">
+                                <div class="card-body">
+                                    <div class="row">
+                                        <div class="col-lg-10">{{ingredient.ingredient.name}}</div>
+                                        <div class="col-lg-2">
+                                            <input type="number" class="form-control" [(ngModel)]="ingredient.quantity" (ngModelChange)="recalculate()"  [ngClass]="{'': (ingredient.quantity == 0), 'is-valid': (ingredient.quantity > 0)}"  />
+                                        </div>
                                     </div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-            </div>        
+                </div>        
+            </div>
         </div>
-    </div>
-    <div class="row pt-5">
-        <div class="col-md-6"></div>
-        <div class="col-md-2 text-right">
-            <button class="btn btn-primary"><strong>Comprar</strong></button>
+        <div class="row pt-5" *ngIf="formIsValid">
+            <div class="col-md-6"></div>
+            <div class="col-md-2 text-right">
+                <button class="btn btn-primary" (click)="buy()"><strong>Comprar</strong></button>
+            </div>
         </div>
     </div>
 </div>

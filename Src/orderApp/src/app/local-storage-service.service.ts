@@ -21,6 +21,7 @@ export class LocalStorageService {
             
             var newOrder = new Order()
                 newOrder.tableNumber = order.tableNumber
+                newOrder.sandwiches= [];
                 newOrder.sandwiches.push(order.sandwich);
             arr.push(newOrder);
          }

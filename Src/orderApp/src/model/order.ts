@@ -13,6 +13,8 @@ export class Order {
 
   export class NewOrder {
     tableNumber: number;
+    totalAdditional: number;
+    total: number;
     sandwich: OrderSandwich;
   }
 
